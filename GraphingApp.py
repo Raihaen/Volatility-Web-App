@@ -44,7 +44,7 @@ if st.session_state.page == "home":
     DescriptionParagraph = """
                 This web app allows visualizing the market's **implied volatility**, the **SABR volatility**, as well as **Dupire's local volatility**.
                 
-                Select a type of Vol in the slider and fill the necessary data. Click here to visit my [github](https://github.com/Raihaen)
+                Select a type of Vol in the slider and fill the necessary data. Click here to visit my [github](https://https://github.com/Raihaen/Volatility-Web-App)
                 """
     st.markdown(  DescriptionParagraph , unsafe_allow_html=True)
     
