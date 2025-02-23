@@ -12,7 +12,7 @@ from scipy.optimize import brentq
 def ameribor():
     sofr = yf.Ticker("^AMERIBOR")
     sofr_hist = sofr.history(period="1y").tail()['Close']/100
-    return float(sofr_hist)
+    return float(sofr_hist.iloc[0])
 
 def CallDF(ticker):
     
