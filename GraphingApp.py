@@ -137,9 +137,9 @@ if st.session_state.page == "home":
                     st.plotly_chart(graph,use_container_width=True)
                     st.markdown('### Comparison with IV')
                     graph = CreateGraphofindicator('impliedVolatility',calldfFiltred,gauss)
-                    st.markdown("### The values below are in Percentages :")
                     st.plotly_chart(graph,use_container_width=True)                               
                     graph = CreateGraphofindicator('(IV-SABR)/IV (in %)',calldfFiltred,gauss)
+                    st.markdown("### The values below are in Percentages :")
                     st.plotly_chart(graph,use_container_width=True)
                     st.markdown("-> Notice that the difference very small near $S_0$, except for option with inaccurate implied volatilities (probably due to non accurate pricing).")
 
