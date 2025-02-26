@@ -40,7 +40,7 @@ def go_to_page(page_name):
 if st.session_state.page == "home":
 
 
-    st.title("Implied Vol sruface generator")
+    st.title("Implied Vol surface generator")
     DescriptionParagraph = """
                 This web app allows visualizing the market's **implied volatility**, the **SABR volatility**, as well as **Dupire's local volatility**.
                 
