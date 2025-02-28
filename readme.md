@@ -97,6 +97,10 @@ $$ \sigma_{loc}^2(S_0,M,\tau) = \frac{\sigma_{imp}+ 2\tau \sigma_{imp} \frac{\pa
 To implement the theory we just discussed, we start by calculating Implied Vol derivatives. This can be done using finite differences as is done in the code, by first filtering through unique values of variable $x$ and then applying $\frac{\partial \sigma}{\partial y} \big|_{i}= \frac{\sigma_{i+1}-\sigma_i}{y_{i+1}-y_i}$.
 We use $(i,i-1)$ instead of $(i+1, i-1)$ because of the difference in traded volume between strikes (which I noticed kind of has a $mod\space 2$ trend), this way we "smooth-out" the derivative function.
 
+I saw mutiple people use gradient techniques but when implementing them I noticed that it doesnt accurately calculate derivatives and sometimes doesn't provide a value at all, a popular getaround I saw was taking $Max(gradient \space score,\varepsilon)$ but that just makes things worse.
+
+It's also important to underline that applying a gradient method directly might give bad results due to the way option databases are structured (many $T$ and $K$ values are repeated resulting in divisions by 0). These are mainly the reasons that lead me to the above specified derivative calculation method.
+
 In our calculations, we will be using the AMERIBOR as a value for $r$ and the dividend yield provided by `yfinance` as $d$.
 
 The robustness of this model can be checked by calculating the integral of local volatility values through the most probable path of the stock with expiry at K (Gatheral, The Volatility Surface: A Practitioner's Guide).
@@ -106,8 +110,20 @@ The robustness of this model can be checked by calculating the integral of local
 The SABR Model stands for S Alpha Beta Rho. In this part, I will be relying on Hagan's mythical 2002 paper *MANAGING SMILE RISK*.
 We are aiming for a dynamic SADT model, since we have multiple T's. This is done by applying a different calibration for each T and then create the vol surface.
 We will be using a lognormal SADT, since (according to my research, a &\beta& =1$ is best suited for equities and derivatives, except in special market conditions). We then calibrate the values for $\alpha$ , $\nu$, and $\rho$. This is can be done through multiple methods of minimization, so as to make the SADT vol as close as possible to the market's implied vol, we minimize the square of the difference between the SADT Vol and the market's IV. after experimenting with minimization algos : `L-BFGS-B`,`Nelder-Mead` and `trust-constr` (all are available in the code). My final choice was `L-BFGS-B` as it's the most suited for our function.
+
 -> For the SADT vol function, thanks to our $\beta$ beign equal to 1, a lot of terms in equation $(2.17a)$ go to zero (the full formula is also inculded to experiment with different values of $\beta$).
+
 As for $r$ and $d$ values, I used Ameribor and dividens obtained via `yfinance`.
 The app allows checking both the market IV and the SADT vol, as well as their difference relative to the IV expressed in percentages. We notice that it fits very well, with less than 1% difference near strike, except for misspriced options (probably due to low volumes and so innacurate pricings).
 
+## Part 5 : the SVI 5 parameter curve
+
+We now will try to implement our final model, qualified by Vola Dynamics as the ""The best vol curve parametrization in the public domain" : **Jim Gatheral’s 5-parameter SVI curve**.
+**WORK IN PROGRESS**
+
 This concludes this part of the project, the next goal will be pricing different sets of exotic options !
+
+### Small Note on SPIBOR vs AMERIBOR
+
+When calculating forward prices, I was tempted to use SPIBOR (box rate from SPDR), however, when calculating it, I realized that it was less *"stable"* than Ameribor and scraped the idea. And example code to calculate it can still be found on `DataFunctions.py` tho.
+A nice idea to try is implementing SABR with SPIBOR and comparing it to AMERIBOR SABR.

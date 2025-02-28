@@ -101,6 +101,42 @@ def LiquidityFilter(df, bound=100):
 
 
 
+### Ameribor vs SPIBOR : 
+
+def calculate_SPIBOR(expiration_date):
+    # Get the SPX options data
+    ticker = yf.Ticker("^SPX")
+    options_data = CallDF("^SPX")
+    
+    # Find the spot price (current price of the underlying SPX index)
+    S0 = ticker.history(period='1d')['Close'].iloc[-1]
+    
+    # Find the ATM strike price (closest to the spot price)
+    strikes = options_data.calls['strike']
+    K = min(strikes, key=lambda x: abs(x - S0))  # Find the ATM strike
+    
+    # Get the corresponding ATM call and put option prices
+    C = options_data.calls[options_data.calls['strike'] == K]['lastPrice'].iloc[0]
+    P = options_data.puts[options_data.puts['strike'] == K]['lastPrice'].iloc[0]
+    
+    # Time to expiration in years (T)
+    expiration_date = pd.to_datetime(expiration_date)
+    current_date = pd.to_datetime('today')
+    T = (expiration_date - current_date).days / 365.0
+    
+    # Calculate the implied risk-free interest rate (r) using the put-call parity formula
+    implied_rate = np.log(K/(S0 + P - C))/T
+
+    return implied_rate
+
+
+# Example usage
+# expiration_date = "2025-03-31"  # Choose an expiration date (format: YYYY-MM-DD)
+
+# implied_rate = calculate_SPIBOR(expiration_date)
+# print(f"Implied risk-free interest rate: {implied_rate*100:.2f}%")
+# print((ameribor() - implied_rate)/implied_rate*100)
+
 
 
 
