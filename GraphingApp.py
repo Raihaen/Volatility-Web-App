@@ -47,7 +47,7 @@ if st.session_state.page == "home":
                 Select a type of Vol in the slider and fill the necessary data. Click here to visit my [github](https://https://github.com/Raihaen/Volatility-Web-App)
                 """
     st.markdown(  DescriptionParagraph , unsafe_allow_html=True)
-    
+    st.markdown("**Disclamer :** As you may expect, the results are not accurate in aftermarket hours, due to lower liquidity and wider bid-ask spreads, which can distort volatility estimates.")
 
     with st.sidebar: #we create a sidebar to input user parameters
 
