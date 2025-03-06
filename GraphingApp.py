@@ -6,6 +6,7 @@ from pathlib import Path
 from DataImpLib import *
 from SabrFunctions import *
 from ManualIV import *
+from ssvi import *
 
 
 
@@ -42,7 +43,7 @@ if st.session_state.page == "home":
 
     st.title("Implied Vol surface generator")
     DescriptionParagraph = """
-                This web app allows visualizing the market's **implied volatility**, the **SABR volatility**, as well as **Dupire's local volatility**.
+                This web app allows visualizing the market's **implied volatility**, the **SABR volatility**, **SSVI** (still being refined) as well as **Dupire's local volatility**.
                 
                 Select a type of Vol in the slider and fill the necessary data. Click here to visit my [github](https://https://github.com/Raihaen/Volatility-Web-App)
                 """
@@ -54,7 +55,8 @@ if st.session_state.page == "home":
         option1 = 'Implied Volatility'
         option2 = 'SABR Local Volatility'
         option3 = 'Local Volatility - Dupire'
-        option = st.selectbox("Pick a sruface", [option1,option2 ,option3 ], index=1 ) #Show SADT First
+        option4 = 'SSVI (experimental)'
+        option = st.selectbox("Pick a sruface", [option1,option2 ,option3,option4 ], index=1 ) #Show SADT First
         ticker = st.text_input("Enter the ticker name",value='TSLA')
         K_min = st.number_input("Enter the minimal moneyness value, (for 70% type 70)",value=70)
         K_max = st.number_input("Enter the maximal moneyness value, (for 130% type 130)",value=130)
@@ -83,14 +85,16 @@ if st.session_state.page == "home":
             calldfFiltred = Krangecreator(calldf, ticker, K_min, K_max)
             calldfFiltred = Trangecreator(calldfFiltred, T_min, T_max)
             calldfFiltred = LiquidityFilter(calldfFiltred, bound)        
-            if option == 'Implied Volatility' :
+            if option == option1 :
                 if calldfFiltred.empty:
                     st.text("Dataset is empty")
                 else:
                     ## implied vol provided by Yahoo Finance :
                     #st.markdown("### The implied volatiliy graph")
-                    sigma, K, T = getindicators(calldfFiltred)
-                    graph = CreateGraph(sigma, K, T, gauss)
+                    # sigma, K, T = getindicators(calldfFiltred)
+                    # graph = CreateGraph(sigma, K, T, gauss)
+                    graph = CreateGraphofindicator('impliedVolatility',calldfFiltred,gauss)
+
                     #check if df is empty or not before creating the plot
                     st.plotly_chart(graph, use_container_width=True)
 
@@ -142,6 +146,21 @@ if st.session_state.page == "home":
                     st.markdown("### The values below are in Percentages :")
                     st.plotly_chart(graph,use_container_width=True)
                     st.markdown("-> Notice that the difference very small near $S_0$, except for option with inaccurate implied volatilities (probably due to non accurate pricing).")
+            elif option == option4 :
+                if calldfFiltred.empty:
+                    st.text("Dataset is empty")
+                else:            
+                    calldfFiltred = SSVICalculator(calldfFiltred, ticker)
+                    calldfFiltred['(IV-SSVI)/IV (in %)'] = (calldfFiltred['impliedVolatility']-calldfFiltred['ssvi_vol'])/calldfFiltred['impliedVolatility']*100
+                    graph = CreateGraphofindicator('ssvi_vol',calldfFiltred,gauss)
+                    st.plotly_chart(graph,use_container_width=True)
+                    st.markdown('### Comparison with IV')
+                    graph = CreateGraphofindicator('impliedVolatility',calldfFiltred,gauss)
+                    st.plotly_chart(graph,use_container_width=True)                               
+                    graph = CreateGraphofindicator('(IV-SSVI)/IV (in %)',calldfFiltred,gauss)
+                    st.markdown("### The values below are in Percentages :")
+                    st.plotly_chart(graph,use_container_width=True)
+                    st.markdown("-> As you can notice, SABR's IV fit is tighter than SSVI, I'm still working on finding out whether it's due to flaws in my emplimentation or some market conditions.")
 
 
     elif check_ticker_valid(ticker) == False :
