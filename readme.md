@@ -1,6 +1,8 @@
 
 # Vol APP
 
+**You can now directly use the web app [from here](https://vol-webapp-rey.streamlit.app)**
+
 This project is an evolving work where I try to apply some of the Markets knowledge I'm cultivating through studying Trading books in real-life-like applications.
 
 My current objective is to construct an app to view the implied volatility surface by the market and use a local volatility model to price some exotic options using the data collected.
