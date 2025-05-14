@@ -158,4 +158,4 @@ webencodings==0.5.1
 Werkzeug==2.3.6
 wrapt==1.14.1
 xgboost==2.1.1
-yfinance
+yfinance==0.2.61
