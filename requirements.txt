@@ -7,7 +7,7 @@ attrs==25.1.0
 beautifulsoup4==4.12.3
 blinker==1.9.0
 cachetools==5.3.1
-certifi==2022.12.7
+certifi
 charset-normalizer==3.1.0
 click==8.1.8
 colorama==0.4.6
@@ -158,4 +158,4 @@ webencodings==0.5.1
 Werkzeug==2.3.6
 wrapt==1.14.1
 xgboost==2.1.1
-yfinance==0.2.61
+yfinance
